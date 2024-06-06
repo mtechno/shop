@@ -4,11 +4,17 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [MainController::class, 'index']);
-Route::get('/categories', [MainController::class, 'categories']);
-Route::get('/{category}', [MainController::class, 'category']);
+Route::get('/', [MainController::class, 'index'])->name('index');
+Route::get('/categories', [MainController::class, 'categories'])->name('categories');
+Route::get('/basket', [MainController::class, 'basket'])->name('basket');
+Route::get('/{category}', [MainController::class, 'category'])->name('category');
 
-Route::get('/mobiles/{product?}', [MainController::class, 'product']);
+Route::get('/{category}/{product?}', [MainController::class, 'product'])->name('product');
+
+
+
+Route::get('/basket/place', [MainController::class, 'basketPlace'])->name('basket-place');
+
 
 
 
