@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use function PHPUnit\Framework\isNull;
 
 class Product extends Model
 {
@@ -19,5 +20,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function getPriceForCount(){
+        if (!is_null($this->pivot)){
+            return $this->pivot->count * $this->price;
+        }
+        return $this->price;
+    }
 
 }
