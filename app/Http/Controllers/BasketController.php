@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class BasketController extends Controller
@@ -16,14 +17,19 @@ class BasketController extends Controller
         return view('basket', compact('order'));
     }
     public function basketPlace(){
-        return view('order');
+        $orderId = session('orderId');
+        if (is_null($orderId)) {
+            return redirect()->route('index');
+        }
+        $order = Order::find($orderId);
+        return view ('order', compact('order'));
     }
 
     public function basketAdd($productId)
     {
         $orderId = session('orderId');
         if (is_null($orderId)) {
-            $order = Order::create()->id;
+            $order = Order::create();
             session(['orderId' => $order->id]);
         } else {
             $order = Order::find($orderId);
@@ -35,6 +41,10 @@ class BasketController extends Controller
         } else {
             $order->products()->attach($productId);
         }
+
+        $product = Product::find($productId);
+
+        session()->flash('product', 'Товар ' . $product->name . ' добавлен в корзину');
 
         return redirect()->route('basket');
     }
@@ -56,7 +66,24 @@ class BasketController extends Controller
                 $pivotRow->update();
             }
         }
+        $product = Product::find($productId);
+        session()->flash('warning', 'Товар '. $product->name . ' удален из корзины');
         return redirect()->route('basket');
+    }
+
+    public function basketConfirm(Request $request){
+        $orderId = session('orderId');
+        $order = Order::find($orderId);
+        $success = $order->saveOrder($request->name, $request->phone);
+
+        if ($success) {
+            session()->flash('success', 'Ваш заказа принят в обработку');
+        } else {
+            session()->flash('warning', 'Заказ не принят');
+        }
+
+        return redirect()->route('index');
+
     }
     //
     //

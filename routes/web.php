@@ -18,7 +18,7 @@ Route::post('/basket/add/{id}', [BasketController::class, 'basketAdd'])->name('b
 Route::post('/basket/remove/{id}', [BasketController::class, 'basketRemove'])->name('basket-remove');
 
 Route::get('/{category}/{product?}', [MainController::class, 'product'])->name('product');
-
+Route::post('/basket/place', [BasketController::class, 'basketConfirm'])->name('basket-confirm');
 
 
 

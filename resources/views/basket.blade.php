@@ -1,9 +1,8 @@
-@extends('master')
+@extends('layouts.master')
 
 @section('title', 'Корзина')
 
 @section('content')
-    <div class="starter-template">
         <h1>Корзина</h1>
         <p>Оформление заказа</p>
         <div class="panel">
@@ -21,12 +20,13 @@
                     <tr>
                         <td>
                             <a href="{{route('product', [$product->category->code, $product->code])}}">
-                                <img height="56px" src="http://laravel-diplom-1.rdavydov.ru/storage/products/iphone_x.jpg">
+                                <img height="56px"
+                                     src="http://laravel-diplom-1.rdavydov.ru/storage/products/iphone_x.jpg">
                                 {{$product->name}}
                             </a>
                         </td>
                         <td><span class="badge">{{$product->pivot->count}}</span>
-                            <div class="btn-group">
+                            <div class="btn-group form-inline">
                                 <form action="{{ route('basket-remove', $product) }}" method="POST">
                                     <button type="submit" class="btn btn-danger" href=""><span
                                             class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
@@ -52,8 +52,7 @@
             </table>
             <br>
             <div class="btn-group pull-right" role="group">
-                <a type="button" class="btn btn-success" href="http://laravel-diplom-1.rdavydov.ru/basket/place">Оформить заказ</a>
+                <a type="button" class="btn btn-success" href="{{ route('basket-place') }}">Оформить заказ</a>
             </div>
         </div>
-    </div>
 @endsection
