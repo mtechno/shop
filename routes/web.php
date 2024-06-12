@@ -16,9 +16,10 @@ Auth::routes([
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('get-logout');
 
+
 Route::group([
     'middleware' => 'auth:sanctum',
-    'namespace' => 'Admin',
+    'prefix' => 'admin',
 ], function () {
     Route::group([
         'middleware' => 'is_admin',
@@ -26,7 +27,8 @@ Route::group([
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('home');
 
     });
-
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
 
 
 });
@@ -35,7 +37,7 @@ Route::post('/basket/add/{id}', [BasketController::class, 'basketAdd'])->name('b
 Route::group([
     'middleware' => 'basket_not_empty',
     'prefix' => 'basket',
-], function (){
+], function () {
     Route::get('/', [BasketController::class, 'basket'])->name('basket');
     Route::get('/place', [BasketController::class, 'basketPlace'])->name('basket-place');
     Route::post('/remove/{id}', [BasketController::class, 'basketRemove'])->name('basket-remove');
