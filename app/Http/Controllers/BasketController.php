@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BasketController extends Controller
 {
@@ -13,8 +14,9 @@ class BasketController extends Controller
         $orderId = session('orderId');
         if (!is_null($orderId)) {
             $order = Order::findOrFail($orderId); //ищу ордер по id
+            return view('basket', compact('order'));
         }
-        return view('basket', compact('order'));
+        return view('basket');
     }
     public function basketPlace(){
         $orderId = session('orderId');
@@ -40,6 +42,11 @@ class BasketController extends Controller
             $pivotRow->update();
         } else {
             $order->products()->attach($productId);
+        }
+        //сохраняю id пользователя, который сделал заказ
+        if (Auth::check()) {
+            $order->user_id = Auth::id();
+            $order->save();
         }
 
         $product = Product::find($productId);
