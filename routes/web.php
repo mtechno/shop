@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BasketController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\ResetController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,8 @@ Auth::routes([
     'confirm' => false,
     'verify' => false,
 ]);
+
+Route::get('reset', [ResetController::class, 'reset'])->name('reset');
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('get-logout');
 
