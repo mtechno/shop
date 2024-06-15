@@ -16,22 +16,29 @@ Auth::routes([
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('get-logout');
 
-
-Route::group([
-    'middleware' => 'auth:sanctum',
-    'prefix' => 'admin',
-], function () {
+Route::middleware('auth')->group(function () {
     Route::group([
-        'middleware' => 'is_admin',
-    ], function () {
-        Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('home');
-
+        'prefix' => 'person',
+        'as' => 'person.',
+    ], function (){
+        Route::get('/orders', [\App\Http\Controllers\Person\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [\App\Http\Controllers\Person\OrderController::class, 'show'])->name('orders.show');
     });
-    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
-    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
 
-
+    Route::group([
+        'prefix' => 'admin',
+    ], function (){
+        Route::group(['middleware' => 'is_admin'], function () {
+            Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('home');
+            Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
+        });
+        Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    });
 });
+
+
+
 Route::post('/basket/add/{id}', [BasketController::class, 'basketAdd'])->name('basket-add');
 
 Route::group([
