@@ -12,16 +12,14 @@ class BasketIsNotEmpty
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
     public function handle(Request $request, Closure $next): Response
     {
         $orderId = session('orderId');
-        if (!is_null($orderId)) {
-            $order = Order::findOrFail($orderId);
-            if ($order->products->count() > 0) {
-                return $next($request);
-            }
+        if (!is_null($orderId) && Order::getFullSum() > 0) {
+            return $next($request);
+
         }
         session()->flash('warning', 'Ваша корзина пуста!');
         return redirect()->route('index');

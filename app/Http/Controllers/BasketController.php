@@ -50,6 +50,7 @@ class BasketController extends Controller
         }
 
         $product = Product::find($productId);
+        Order::changeFullSum($product->price);
 
         session()->flash('product', 'Товар ' . $product->name . ' добавлен в корзину');
 
@@ -74,6 +75,7 @@ class BasketController extends Controller
             }
         }
         $product = Product::find($productId);
+        Order::changeFullSum($product->price);
         session()->flash('warning', 'Товар '. $product->name . ' удален из корзины');
         return redirect()->route('basket');
     }
@@ -88,7 +90,7 @@ class BasketController extends Controller
         } else {
             session()->flash('warning', 'Заказ не принят');
         }
-
+        Order::eraseOrderSum();
         return redirect()->route('index');
 
     }
