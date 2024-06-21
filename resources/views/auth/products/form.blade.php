@@ -66,7 +66,9 @@
                     <div class="col-sm-6">
                         @include('auth.layouts.error', ['fieldName' => 'description'])
                         <textarea name="description" id="description" cols="72"
-                                  rows="7">@isset($product){{ $product->description }}@endisset</textarea>
+                                  rows="7">@isset($product)
+                                {{ $product->description }}
+                            @endisset</textarea>
                     </div>
                 </div>
                 <br>
@@ -87,24 +89,32 @@
                                value="@isset($product){{ $product->price }}@endisset">
                     </div>
                 </div>
-                    <br>
-                    @foreach ([
-                    'hit' => 'Хит',
-                    'new' => 'Новинка',
-                    'recommend' => 'Рекомендуемые'
-                    ] as $field => $title)
-                        <div class="form-group row">
-                            <label for="code" class="col-sm-2 col-form-label">{{ $title }}: </label>
-                            <div class="col-sm-10">
-                                <input type="checkbox" name="{{$field}}" id="{{$field}}"
-                                       @if(isset($product) && $product->$field === 1)
-                                           checked="'checked'"
-                                    @endif
-                                >
-                            </div>
+                <div class="input-group row">
+                    <label for="count" class="col-sm-2 col-form-label">Количество: </label>
+                    <div class="col-sm-2">
+                        @include('auth.layouts.error', ['fieldName' => 'count'])
+                        <input type="text" class="form-control" name="count" id="count"
+                               value="@isset($product){{ $product->count }}@endisset">
+                    </div>
+                </div>
+                <br>
+                @foreach ([
+                'hit' => 'Хит',
+                'new' => 'Новинка',
+                'recommend' => 'Рекомендуемые'
+                ] as $field => $title)
+                    <div class="form-group row">
+                        <label for="code" class="col-sm-2 col-form-label">{{ $title }}: </label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" name="{{$field}}" id="{{$field}}"
+                                   @if(isset($product) && $product->$field === 1)
+                                       checked="'checked'"
+                                @endif
+                            >
                         </div>
-                        <br>
-                    @endforeach
+                    </div>
+                    <br>
+                @endforeach
                 <button class="btn btn-success">Сохранить</button>
             </div>
         </form>

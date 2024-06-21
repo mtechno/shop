@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
 //    protected $table = 'product';
     protected $fillable =
@@ -66,6 +68,10 @@ class Product extends Model
         return $this->recommend === 1;
     }
 
+    public function scopeByCode($query, $code)
+    {
+        return $query->where('code', $code);
+    }
     public function scopeHit($query)
     {
         return $query->where('hit', 1);
@@ -79,5 +85,10 @@ class Product extends Model
     public function scopeRecommend($query)
     {
         return $query->where('recommend', 1);
+    }
+
+    public function isAvailable()
+    {
+        return $this->trashed() && $this->count >0;
     }
 }
