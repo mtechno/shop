@@ -8,10 +8,12 @@
     <p>Цена: <b>{{ $product->price }} руб.</b></p>
     <img src="{{ Storage::url($product->image) }}">
     <p>{{ $product->description }}</p>
-    @if($product->isAvailable())
-        <a class="btn btn-success" href="{{ route('basket-add', $product) }}">Добавить в корзину</a>
-    @else
-        Недоступен
+    <form action="{{ route('basket-add', $product) }}" method="POST">
+        @if($product->isAvailable())
+            <button type="submit" class="btn btn-success" role="button">В корзину</button>
+        @else
+            Недоступен
         @endif
-        </div>
+        @csrf
+    </form>
         @endsection

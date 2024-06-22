@@ -2,98 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Basket;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class BasketController extends Controller
 {
 
-    public function basket(){
-        $orderId = session('orderId');
-        if (!is_null($orderId)) {
-            $order = Order::findOrFail($orderId); //ищу ордер по id
-            return view('basket', compact('order'));
-        }
-        return view('basket');
-    }
-    public function basketPlace(){
-        $orderId = session('orderId');
-        if (is_null($orderId)) {
-            return redirect()->route('index');
-        }
-        $order = Order::find($orderId);
-        return view ('order', compact('order'));
+    public function basket()
+    {
+        $order = (new Basket())->getOrder();
+        return view('basket', compact('order'));
     }
 
-    public function basketAdd($productId)
+    public
+    function basketPlace() //подтверждение заказа
     {
         $orderId = session('orderId');
-        if (is_null($orderId)) {
-            $order = Order::create();
-            session(['orderId' => $order->id]);
-        } else {
-            $order = Order::find($orderId);
-        }
-        if ($order->products->contains($productId)) {
-            $pivotRow = $order->products()->where('product_id', $productId)->first()->pivot;
-            $pivotRow->count++;
-            $pivotRow->update();
-        } else {
-            $order->products()->attach($productId);
-        }
-        //сохраняю id пользователя, который сделал заказ
-        if (Auth::check()) {
-            $order->user_id = Auth::id();
-            $order->save();
-        }
+        $order = Order::findOrFail($orderId);
+        return view('order', compact('order'));
+    }
 
-        $product = Product::find($productId);
-        Order::changeFullSum($product->price);
-
-        session()->flash('product', 'Товар ' . $product->name . ' добавлен в корзину');
+    public
+    function basketAdd(Product $product)
+    {
+        $result = (new Basket(true))->addProduct($product);
+        if ($result) {
+            session()->flash('success', 'Добавлен товар ' . $product->name);
+        } else {
+            session()->flash('warning', 'Товар ' . $product->name . ' в большем кол-ве не доступен для заказа');
+        }
 
         return redirect()->route('basket');
     }
-    public function basketRemove($productId)
+
+    public
+    function basketRemove(Product $product)
     {
-        $orderId = session('orderId');
-        if (is_null($orderId)) {
-            return redirect()->route('basket');
-        }
-        $order = Order::find($orderId);
-
-
-        if ($order->products->contains($productId)) {
-            $pivotRow = $order->products()->where('product_id', $productId)->first()->pivot;
-            if ($pivotRow->count < 2) {
-                $order->products()->detach($productId);
-            } else {
-                $pivotRow->count--;
-                $pivotRow->update();
-            }
-        }
-        $product = Product::find($productId);
-        Order::changeFullSum($product->price);
-        session()->flash('warning', 'Товар '. $product->name . ' удален из корзины');
+        (new Basket())->removeProduct($product);
+        session()->flash('warning', 'Товар ' . $product->name . ' удален из корзины');
         return redirect()->route('basket');
     }
 
-    public function basketConfirm(Request $request){
-        $orderId = session('orderId');
-        $order = Order::find($orderId);
-        $success = $order->saveOrder($request->name, $request->phone);
-
-        if ($success) {
+    public
+    function basketConfirm(Request $request)
+    {
+        if ((new Basket())->saveOrder($request->name, $request->phone)) {
             session()->flash('success', 'Ваш заказа принят в обработку');
         } else {
-            session()->flash('warning', 'Заказ не принят');
+            session()->flash('warning', 'Товар не доступен для заказа в полном объеме');
         }
         Order::eraseOrderSum();
         return redirect()->route('index');
 
     }
-    //
-    //
+
+//
+//
 }
