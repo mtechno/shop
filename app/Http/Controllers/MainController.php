@@ -26,7 +26,7 @@ class MainController extends Controller
             }
         }
 
-        $products = $productsQuery->paginate(4)->withPath("?" . $request->getQueryString());
+        $products = $productsQuery->paginate(6)->withPath("?" . $request->getQueryString());
 
         return view('index', compact('products'));
     }
@@ -40,7 +40,7 @@ class MainController extends Controller
         return view('category', compact('category'));
     }
     public function product($category, $productCode){
-        $product = Product::withTrashed()->byCode($productCode)->first();
+        $product = Product::withTrashed()->byCode($productCode)->firstOrFail();
         return view('product', compact('product'));
     }
 
