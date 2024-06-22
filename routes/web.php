@@ -58,6 +58,8 @@ Route::group([
 Route::get('/', [MainController::class, 'index'])->name('index');
 Route::get('/categories', [MainController::class, 'categories'])->name('categories');
 
+Route::post('subscription/{product}', [MainController::class, 'subscribe'])->name('subscription');
+
 //Route::get('/login', [AuthController::class, 'login'])->name('login');
 //Route::get('/register', [AuthController::class, 'register'])->name('register');
 
