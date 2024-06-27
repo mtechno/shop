@@ -10,10 +10,11 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 class AuthController extends Controller
 {
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, HasApiTokens;
 //    public static function middleware(): array
 //    {
 //        return [
@@ -79,24 +80,11 @@ class AuthController extends Controller
             auth()->user() ?? 0
         )
         {
-            auth()->user()->tokens()->delete();
-            return [1111];
-//            auth()->logout();
-//            $request->session()->invalidate();
-//            $request->session()->regenerateToken();
+            $request->user()->currentAccessToken()->delete();
         }
         return [
             'message' => 'Logged out'
         ];
-
-//        Auth::logout();
-//
-//        $request->session()->invalidate();
-//
-//        $request->session()->regenerateToken();
-//
-//        return redirect('/');
-
 
     }
     //
