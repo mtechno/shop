@@ -37,7 +37,7 @@ class AuthController extends Controller
 
         ]);
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        $token = $user->createToken('myapptoken2')->plainTextToken;
 
         $response = [
             'user' => $user,
@@ -49,38 +49,45 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+//
+        $data = $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string'
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $data['email'])->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($data['password'], $user->password)) {
             return response([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+                'msg' => 'incorrect username or password'
+            ], 401);
         }
-        Auth::setUser($user);
-        return response()->json([
-            Auth::user(),
-        ]);
+
+        $token = $user->createToken('shopToken')->plainTextToken;
+
+        $res = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($res, 201);
     }
 
     public function logout(Request $request)
     {
-//        dd(Auth::user());
         if (
             auth()->user() ?? 0
         )
         {
-//            dd(1111);
             auth()->user()->tokens()->delete();
+            return [1111];
 //            auth()->logout();
 //            $request->session()->invalidate();
 //            $request->session()->regenerateToken();
         }
-
+        return [
+            'message' => 'Logged out'
+        ];
 
 //        Auth::logout();
 //
@@ -90,9 +97,7 @@ class AuthController extends Controller
 //
 //        return redirect('/');
 
-        return [
-            'message' => 'Logged out'
-        ];
+
     }
     //
 }

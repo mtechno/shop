@@ -17,43 +17,37 @@ use Illuminate\Support\Facades\Route;
 //]);
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('auth:sanctum');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
+
+Route::get('reset', [\App\Http\Controllers\Api\ResetController::class, 'reset'])->middleware('auth:sanctum');
 
 
 Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->name('categories.index');
-Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store'])->name('categories.store');
+Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store'])->name('categories.store')->middleware('auth:sanctum');
 Route::get('/categories/{code}', [\App\Http\Controllers\Api\CategoryController::class, 'show'])->name('categories.show');
-Route::put('/categories/{code}', [\App\Http\Controllers\Api\CategoryController::class, 'update'])->name('categories.update');
-Route::delete('/categories/{code}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy'])->name('categories.destroy');
+Route::put('/categories/{code}', [\App\Http\Controllers\Api\CategoryController::class, 'update'])->name('categories.update')->middleware('auth:sanctum');
+Route::delete('/categories/{code}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy'])->name('categories.destroy')->middleware('auth:sanctum');
 
 
 Route::get('/products', [\App\Http\Controllers\Api\ProductController::class, 'index'])->name('products.index');
-Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store');
+Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store')->middleware('auth:sanctum');
 Route::get('/products/{code}', [\App\Http\Controllers\Api\ProductController::class, 'show'])->name('products.show');
-Route::put('/products/{code}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update');
-Route::delete('/products/{code}', [\App\Http\Controllers\Api\ProductController::class, 'destroy'])->name('products.destroy');
+Route::put('/products/{code}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update')->middleware('auth:sanctum');
+Route::delete('/products/{code}', [\App\Http\Controllers\Api\ProductController::class, 'destroy'])->name('products.destroy')->middleware('auth:sanctum');
 
 
 Route::get('/orders', [\App\Http\Controllers\Api\OrderController::class, 'index'])->name('orders.index');
-Route::post('/orders', [\App\Http\Controllers\Api\OrderController::class, 'store'])->name('orders.store');
+Route::post('/orders', [\App\Http\Controllers\Api\OrderController::class, 'store'])->name('orders.store')->middleware('auth:sanctum');
 Route::get('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'show'])->name('orders.show');
-Route::put('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'update'])->name('orders.update');
-Route::delete('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'destroy'])->name('orders.destroy');
-
-
-//Route::post('/login', [\App\Http\Controllers\Api\LoginController::class, 'login'])->name('login');
-
-
-Route::get('skus', [SkusController::class, 'getSkus']);
+Route::put('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'update'])->name('orders.update')->middleware('auth:sanctum');
+Route::delete('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'destroy'])->name('orders.destroy')->middleware('auth:sanctum');
 
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('reset', [ResetController::class, 'reset']);
-
-Route::post('/logout', [LoginController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
     Route::group([
