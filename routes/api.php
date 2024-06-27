@@ -1,9 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Api\SkusController;
+use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BasketController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ResetController;
@@ -16,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 //    'confirm' => false,
 //    'verify' => false,
 //]);
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('auth:sanctum');
+
+
 Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store'])->name('categories.store');
 Route::get('/categories/{code}', [\App\Http\Controllers\Api\CategoryController::class, 'show'])->name('categories.show');
@@ -30,7 +34,6 @@ Route::put('/products/{code}', [\App\Http\Controllers\Api\ProductController::cla
 Route::delete('/products/{code}', [\App\Http\Controllers\Api\ProductController::class, 'destroy'])->name('products.destroy');
 
 
-
 Route::get('/orders', [\App\Http\Controllers\Api\OrderController::class, 'index'])->name('orders.index');
 Route::post('/orders', [\App\Http\Controllers\Api\OrderController::class, 'store'])->name('orders.store');
 Route::get('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'show'])->name('orders.show');
@@ -38,12 +41,7 @@ Route::put('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 
 Route::delete('/orders/{code}', [\App\Http\Controllers\Api\OrderController::class, 'destroy'])->name('orders.destroy');
 
 
-
-
-
-Route::post('/login', [\App\Http\Controllers\Api\LoginController::class, 'login'])->name('login');
-
-
+//Route::post('/login', [\App\Http\Controllers\Api\LoginController::class, 'login'])->name('login');
 
 
 Route::get('skus', [SkusController::class, 'getSkus']);
@@ -99,7 +97,6 @@ Route::post('subscription/{product}', [MainController::class, 'subscribe']);
 
 
 //Route::get('/register', [AuthController::class, 'register'])->name('register');
-
 
 
 Route::get('/{category}/{product}', [MainController::class, 'product']);
