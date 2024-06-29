@@ -31,7 +31,7 @@ class ProductController extends Controller
         if (request()->hasFile('image')) {
             $path = $request->file('image')->store('categories');
             $params['image'] = $path;
-        }
+        }1;
 
         Product::create($params);
         return response()->json($params);
@@ -48,7 +48,7 @@ class ProductController extends Controller
         {
             return response()->json('Product not found', 404);
         }
-        return response()->json($product);
+        return new ProductResource($product);
         //
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,8 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::paginate(10);
-        return response()->json($categories);
+//        return response()->json($categories);
+        return CategoryResource::collection($categories);
         //
     }
 
@@ -50,7 +52,8 @@ class CategoryController extends Controller
         {
             return response()->json('Category not found', 404);
         }
-        return response()->json($category);
+        return new CategoryResource($category);
+//        return response()->json($category);
         //
     }
 
