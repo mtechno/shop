@@ -15,9 +15,41 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::paginate(10);
+        $products = Product::where('id','>',1)
+            ->limit(1)
+            ->first();
+        $d = new \Illuminate\Database\Eloquent\Builder();
+
+        dd($products);
+
+        $products  =    $products ->where('id','>',1)->first();
+
+
+
+        $products = Product::query()
+            ->where('id','>',1)
+            ->paginate(
+                request('per_page') ?? 10
+            );
+
+        dd( $products );
 //        return response()->json($products);
-        return ProductResource::collection($products);
+        return  ProductResource::collection($products);
+        $responseData =
+            [
+                "data" => [
+                    'items' => ProductResource::collection($products),
+                    'pagination' => [
+                        'total' => $products->total(),
+                    ]
+                ]
+            ];
+        if (1)
+            $responseData['message'] = '11';
+        return response()->json($responseData);
+
+
+
         //
     }
 

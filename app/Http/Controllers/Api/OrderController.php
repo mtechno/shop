@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -15,8 +16,22 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::paginate(10);
-        return response()->json($orders);
+        $orders = Order::query()
+            ->paginate(
+                request('perPage') ?? 10
+            );
+        $responseData =
+            [
+                'data' => [
+                    'orders' => OrderResource::collection($orders),
+                    'pagination' => [
+                        'total' => $orders->total(),
+                    ]
+                ]
+            ];
+        return response()->json($responseData);
+//        return response()->json($orders);
+//        return OrderResource::collection($orders);
         //
     }
 
@@ -27,7 +42,12 @@ class OrderController extends Controller
     {
         $params = $request->all();
         Order::create($params);
-        return response()->json($params);
+        $responseData = [
+            'data' => [
+                'params' => $params
+            ]
+        ];
+        return response()->json($responseData);
         //
     }
 
@@ -36,12 +56,19 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::where('id', $id)->first();
+        $order = Order::query()
+            ->where('id', $id)
+            ->first();
+        $responseData = [
+            'data' => [
+                'order' => $order
+            ]
+        ];
         if (!$order)
         {
             return response()->json('Order not found', 404);
         }
-        return response()->json($order);
+        return response()->json($responseData);
         //
     }
 
@@ -53,7 +80,12 @@ class OrderController extends Controller
         $order = Order::where('id', $id)->first();
         $params = $request->all();
         $order->update($params);
-        return response()->json($params);
+        $responseData = [
+            'data' => [
+                'params' => $params
+            ]
+        ];
+        return response()->json($responseData);
         //
     }
 

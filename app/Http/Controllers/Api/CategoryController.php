@@ -20,9 +20,20 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::paginate(10);
-//        return response()->json($categories);
-        return CategoryResource::collection($categories);
+        $categories = Category::query()
+            ->paginate(
+                request('perPage') ?? 10
+            );
+        $responseData =
+            [
+                'data' => [
+                    'orders' => CategoryResource::collection($categories),
+                    'pagination' => [
+                        'total' => $categories->total(),
+                    ]
+                ]
+            ];
+        return response()->json($responseData);
         //
     }
 
