@@ -64,8 +64,7 @@ class OrderController extends Controller
                 'order' => $order
             ]
         ];
-        if (!$order)
-        {
+        if (!$order) {
             return response()->json('Order not found', 404);
         }
         return response()->json($responseData);
@@ -77,7 +76,9 @@ class OrderController extends Controller
      */
     public function update(OrderRequest $request, string $id)
     {
-        $order = Order::where('id', $id)->first();
+        $order = Order::query()
+            ->where('id', $id)
+            ->firstOrFail();
         $params = $request->all();
         $order->update($params);
         $responseData = [
@@ -94,7 +95,9 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        $order = Order::where('id', $id)->first();
+        $order = Order::query()
+            ->where('id', $id)
+            ->firstOrFail();
         $order->delete();
         return response()->json('Order deleted successfully', 204);
         //

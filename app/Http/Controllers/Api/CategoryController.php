@@ -49,7 +49,13 @@ class CategoryController extends Controller
             $params['image'] = $path;
         }
         Category::create($params);
-        return response()->json($params);
+        $responseData = [
+            'data' => [
+                'params' => $params
+            ]
+        ];
+
+        return response()->json($responseData);
         //
     }
 
@@ -58,13 +64,18 @@ class CategoryController extends Controller
      */
     public function show(string $code)
     {
-        $category = Category::where('code', $code)->first();
-        if (!$category)
-        {
+        $category = Category::query()
+            ->where('code', $code)
+            ->firstOrFail();
+        $responseData = [
+            'data' => [
+                'category' => $category
+            ]
+        ];
+        if (!$category) {
             return response()->json('Category not found', 404);
         }
-        return new CategoryResource($category);
-//        return response()->json($category);
+        return response()->json($responseData);
         //
     }
 
@@ -73,7 +84,9 @@ class CategoryController extends Controller
      */
     public function update(CategoryRequest $request, string $code)
     {
-        $category = Category::where('code', $code)->first();
+        $category = Category::query()
+            ->where('code', $code)
+            ->firstOrFail();
         $params = $request->all();
         unset($params['image']);
         if (request()->hasFile('image')) {
@@ -81,7 +94,12 @@ class CategoryController extends Controller
             $params['image'] = $path;
         }
         $category->update($params);
-        return response()->json($params);
+        $responseData = [
+            'data' => [
+                'params' => $params
+            ]
+        ];
+        return response()->json($responseData);
         //
     }
 
@@ -90,7 +108,9 @@ class CategoryController extends Controller
      */
     public function destroy(string $code)
     {
-        $category = Category::where('code', $code)->first();
+        $category = Category::query()
+            ->where('code', $code)
+            ->firstOrFail();
         $category->delete();
         return response()->json('Category deleted successfully', 204);
         //
