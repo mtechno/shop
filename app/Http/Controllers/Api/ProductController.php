@@ -15,41 +15,21 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::where('id','>',1)
-            ->limit(1)
-            ->first();
-        $d = new \Illuminate\Database\Eloquent\Builder();
-
-        dd($products);
-
-        $products  =    $products ->where('id','>',1)->first();
-
-
-
         $products = Product::query()
-            ->where('id','>',1)
+            ->where('id', '>', 1)
             ->paginate(
                 request('per_page') ?? 10
             );
-
-        dd( $products );
-//        return response()->json($products);
-        return  ProductResource::collection($products);
         $responseData =
             [
-                "data" => [
-                    'items' => ProductResource::collection($products),
+                'data' => [
+                    'orders' => ProductResource::collection($products),
                     'pagination' => [
                         'total' => $products->total(),
                     ]
                 ]
             ];
-        if (1)
-            $responseData['message'] = '11';
         return response()->json($responseData);
-
-
-
         //
     }
 
@@ -63,10 +43,17 @@ class ProductController extends Controller
         if (request()->hasFile('image')) {
             $path = $request->file('image')->store('categories');
             $params['image'] = $path;
-        }1;
+        }
+        1;
 
         Product::create($params);
-        return response()->json($params);
+        $responseData = [
+            'data' => [
+                'params' => $params
+            ]
+        ];
+
+        return response()->json($responseData);
         //
     }
 
@@ -75,12 +62,18 @@ class ProductController extends Controller
      */
     public function show(string $code)
     {
-        $product = Product::where('code', $code)->first();
-        if (!$product)
-        {
+        $product = Product::query()
+            ->where('code', $code)
+            ->firstOrFail();
+        $responseData = [
+            'data' => [
+                'product' => $product
+            ]
+        ];
+        if (!$product) {
             return response()->json('Product not found', 404);
         }
-        return new ProductResource($product);
+        return response()->json($responseData);
         //
     }
 
@@ -89,7 +82,9 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $code)
     {
-        $product = Product::where('code', $code)->first();
+        $product = Product::query()
+            ->where('code', $code)
+            ->firstOrFail();
         $params = $request->all();
         unset($params['image']);
         if (request()->hasFile('image')) {
@@ -97,7 +92,12 @@ class ProductController extends Controller
             $params['image'] = $path;
         }
         $product->update($params);
-        return response()->json($params);
+        $responseData = [
+            'data' => [
+                'params' => $params
+            ]
+        ];
+        return response()->json($responseData);
         //
     }
 
@@ -106,7 +106,9 @@ class ProductController extends Controller
      */
     public function destroy(string $code)
     {
-        $product = Product::where('code', $code)->first();
+        $product = Product::query()
+            ->where('code', $code)
+            ->firstOrFail();
         $product->delete();
         return response()->json('Product deleted successfully', 204);
         //
