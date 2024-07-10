@@ -58,7 +58,7 @@ class OrderController extends Controller
     {
         $order = Order::query()
             ->where('id', $id)
-            ->first();
+            ->firstOrFail();
         $responseData = [
             'data' => [
                 'order' => $order

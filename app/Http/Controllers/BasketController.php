@@ -20,8 +20,12 @@ class BasketController extends Controller
     public
     function basketPlace() //подтверждение заказа
     {
-        $orderId = session('orderId');
-        $order = Order::findOrFail($orderId);
+        $basket = new Basket();
+        $order = $basket->getOrder();
+        if (!$basket->countAvailable()) {
+            session()->flash('warning', __('basket.you_cant_order_more'));
+            return redirect()->route('basket');
+        }
         return view('order', compact('order'));
     }
 
@@ -30,9 +34,9 @@ class BasketController extends Controller
     {
         $result = (new Basket(true))->addProduct($product);
         if ($result) {
-            session()->flash('success', 'Добавлен товар ' . $product->name);
+            session()->flash('success', __('basket.added').$product->name);
         } else {
-            session()->flash('warning', 'Товар ' . $product->name . ' в большем кол-ве не доступен для заказа');
+            session()->flash('warning', $product->name . __('basket.not_available_more'));
         }
 
         return redirect()->route('basket');
@@ -42,7 +46,7 @@ class BasketController extends Controller
     function basketRemove(Product $product)
     {
         (new Basket())->removeProduct($product);
-        session()->flash('warning', 'Товар ' . $product->name . ' удален из корзины');
+        session()->flash('warning', __('basket.removed').$product->name);
         return redirect()->route('basket');
     }
 
@@ -51,9 +55,9 @@ class BasketController extends Controller
     {
         $email = Auth::check() ? Auth::user()->email : $request->email;
         if ((new Basket())->saveOrder($request->name, $request->phone, $email)) {
-            session()->flash('success', 'Ваш заказа принят в обработку');
+            session()->flash('success', __('basket.you_order_confirmed'));
         } else {
-            session()->flash('warning', 'Товар не доступен для заказа в полном объеме');
+            session()->flash('warning', __('basket.you_cant_order_more'));
         }
         Order::eraseOrderSum();
         return redirect()->route('index');

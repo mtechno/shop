@@ -15,10 +15,13 @@ Auth::routes([
     'verify' => false,
 ]);
 
+Route::get('locale/{locale}', [MainController::class, 'changeLocale'])->name('locale');
+
 Route::get('reset', [ResetController::class, 'reset'])->name('reset');
 
 Route::get('/logout', [LoginController::class, 'logout'])->name('get-logout');
 
+Route::middleware('set_locale')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::group([
         'prefix' => 'person',
@@ -69,3 +72,6 @@ Route::get('/{category}/{product}', [MainController::class, 'product'])->name('p
 
 
 Route::get('/admin', AdminController::class)->name('admin');
+
+});
+

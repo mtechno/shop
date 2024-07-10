@@ -11,7 +11,7 @@ class OrderController extends Controller
     {
 
         $orders = Order::paginate(1);
-        dd( $orders);
+//        dd( $orders);
         return view('auth.orders.index', compact('orders'));
     }
 

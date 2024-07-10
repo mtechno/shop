@@ -23,7 +23,8 @@ class ResetController extends Controller
             }
         }
 
-        return ['message' => 'Проект сброшен'];
+        session()->flash('success', __('main.project_reset'));
+        return redirect()->route('index');
     }
     //
 }
